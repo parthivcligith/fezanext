@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ShoppingCart, Heart, X, Trash2, Plus, Minus, ChevronRight } from "lucide-react"
 import { useStore } from "@/lib/store"
@@ -14,6 +14,11 @@ function formatPrice(price: number) {
 export function FloatingActions() {
     const { cart, favorites, removeFromCart, updateQuantity, toggleFavorite } = useStore()
     const [openDrawer, setOpenDrawer] = useState<"cart" | "favorites" | null>(null)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0)
     const favCount = favorites.length
@@ -23,6 +28,8 @@ export function FloatingActions() {
     const toggleCart = () => setOpenDrawer(prev => prev === "cart" ? null : "cart")
     const toggleFavorites = () => setOpenDrawer(prev => prev === "favorites" ? null : "favorites")
     const closeDrawer = () => setOpenDrawer(null)
+
+    if (!mounted) return null;
 
     return (
         <>

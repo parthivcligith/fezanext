@@ -92,7 +92,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         })
     }
 
-    const isFavorite = (slug: string) => favorites.some(p => p.slug === slug)
+    const isFavorite = (slug: string) => mounted && favorites.some(p => p.slug === slug)
 
     return (
         <StoreContext.Provider value={{
