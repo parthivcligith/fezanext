@@ -11,6 +11,7 @@ export type CartItem = {
     quantity: number;
     size?: string;
     thickness?: number;
+    top?: string | null;
 }
 
 export type FavoriteItem = {
@@ -60,7 +61,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     const addToCart = (item: Omit<CartItem, "cartItemId">) => {
         setCart(prev => {
-            const cartItemId = `${item.slug}-${item.size || 'default'}-${item.thickness || 'unspecified'}`
+            const cartItemId = `${item.slug}-${item.size || 'default'}-${item.thickness || 'unspecified'}-${item.top || 'standard'}`
             const existing = prev.find(p => p.cartItemId === cartItemId)
             if (existing) {
                 return prev.map(p => p.cartItemId === cartItemId ? { ...p, quantity: p.quantity + item.quantity } : p)

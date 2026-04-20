@@ -6,9 +6,9 @@ import { Footer } from "@/components/footer"
 
 import { VelocityScroll } from "@/components/ui/scroll-based-velocity"
 
-import { ZoomParallax } from "@/components/ui/zoom-parallax"
 
 import { Gallery4 } from "@/components/ui/gallery4";
+import { ProductCard } from "@/components/ui/product-card-1";
 import { Contact2 } from "@/components/ui/contact-2"
 
 const parallaxImages = [
@@ -141,7 +141,40 @@ export default function Home() {
         items={mattressProducts}
       />
       <SaleBanner />
-      <ZoomParallax images={parallaxImages} />
+      <section className="py-24 bg-muted/50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-4">
+              Featured Deal of the Month
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Get our best-selling orthopedic mattress at an unbeatable price. Limited time offer only at Feza Mattresses.
+            </p>
+          </div>
+          <ProductCard
+            id="comfy-ortho-featured"
+            slug="comfy-ortho-mattress"
+            imageUrl="/images/comfy6.png"
+            title="Feza Comfy Ortho Mattress (King Size, 8 Inch)"
+            rating={4.8}
+            ratingsCount={15420}
+            reviewsCount={1205}
+            specifications={[
+              "Premium Ortho Foam Base",
+              "High-Density Bonded Foam for Spinal Support",
+              "Breathable Quilted Fabric Cover",
+              "7-Year Manufacturer Warranty",
+              "100-Night Trial Period",
+            ]}
+            price={18500}
+            originalPrice={28460}
+            isAssured={true}
+            exchangeOffer="4,500"
+            bankOffer="10% Instant Discount on HDFC Bank Cards"
+          />
+        </div>
+      </section>
+
       <Contact2
         title="Get in Touch"
         description="Have questions about our mattresses? Visit our showroom or reach out — we'd love to help you find your perfect sleep solution."

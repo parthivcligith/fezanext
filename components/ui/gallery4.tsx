@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useRef, useEffect, useCallback } from "react";
 
@@ -216,7 +217,8 @@ const Gallery4 = ({
                                         <span className="flex-1 bg-white text-black inline-flex items-center justify-center rounded-md text-sm font-semibold h-10 px-4 py-2 pointer-events-none">
                                             View Product →
                                         </span>
-                                        <button
+                                        <motion.button
+                                            whileTap={{ scale: 0.9 }}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -232,8 +234,9 @@ const Gallery4 = ({
                                             title="Add to Cart"
                                         >
                                             <ShoppingCart className="h-4 w-4" />
-                                        </button>
-                                        <button
+                                        </motion.button>
+                                        <motion.button
+                                            whileTap={{ scale: 0.9 }}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -249,7 +252,7 @@ const Gallery4 = ({
                                             title="Add to Favorites"
                                         >
                                             <Heart className={`h-4 w-4 ${isFavorite(item.id) ? 'fill-white' : ''}`} />
-                                        </button>
+                                        </motion.button>
                                     </div>
                                 </div>
 

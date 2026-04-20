@@ -6,6 +6,8 @@ import { ShoppingCart, Heart, X, Trash2, Plus, Minus, ChevronRight } from "lucid
 import { useStore } from "@/lib/store"
 import Link from "next/link"
 import Image from "next/image"
+import { useRazorpay } from "@/hooks/use-razorpay"
+import { CheckoutDialog } from "@/components/checkout-dialog"
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(price)
@@ -13,7 +15,9 @@ function formatPrice(price: number) {
 
 export function FloatingActions() {
     const { cart, favorites, removeFromCart, updateQuantity, toggleFavorite } = useStore()
+    const { initiatePayment } = useRazorpay()
     const [openDrawer, setOpenDrawer] = useState<"cart" | "favorites" | null>(null)
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -153,7 +157,13 @@ export function FloatingActions() {
                                             <span className="text-muted-foreground">Subtotal</span>
                                             <span className="text-xl font-bold text-foreground">{formatPrice(cartTotal)}</span>
                                         </div>
-                                        <button className="w-full bg-[#1d6fbe] hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-colors shadow-lg active:scale-[0.98]">
+                                        <button 
+                                            onClick={() => {
+                                                closeDrawer();
+                                                setIsCheckoutOpen(true);
+                                            }}
+                                            className="w-full bg-[#1d6fbe] hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-colors shadow-lg active:scale-[0.98]"
+                                        >
                                             Proceed to Checkout
                                         </button>
                                     </div>
@@ -202,6 +212,14 @@ export function FloatingActions() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <CheckoutDialog 
+                open={isCheckoutOpen}
+                onOpenChange={setIsCheckoutOpen}
+                amount={cartTotal}
+                productName={`${cart.length} item(s)`}
+                description={`Cart Checkout: ${cart.map(i => i.name).join(", ")}`}
+            />
         </>
     )
 }

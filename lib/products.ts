@@ -4,15 +4,16 @@ export interface ProductData {
     badge: string
     description: string
     features: string
+    compareFeatures: string[]
     deliveryInfo: string
     rating: number
     reviewCount: number
     reviews: {
-        name: string
-        rating: number
-        date: string
-        title: string
-        text: string
+        name: string;
+        rating: number;
+        date: string;
+        title: string;
+        text: string;
     }[]
 }
 

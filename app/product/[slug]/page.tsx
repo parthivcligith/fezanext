@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, use } from "react"
+import { motion } from "framer-motion"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -37,6 +38,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { getProductBySlug } from "@/lib/products"
 import { useStore } from "@/lib/store"
+import { useCompare } from "@/context/compare-context"
+import { Checkbox } from "@/components/ui/checkbox"
+import { PRICE_LISTS, getFinalPrice } from "@/lib/prices"
+import { useRazorpay } from "@/hooks/use-razorpay"
+import { CheckoutDialog } from "@/components/checkout-dialog"
 
 const IMAGES = [
     "/images/comfy3.png",
@@ -45,72 +51,6 @@ const IMAGES = [
     "/images/comfy6.png",
     "/images/comfy7.png"
 ]
-
-const PRICE_LIST = [
-    { id: 1, size: { length: 72, width: 36, thickness: 4 }, price: 8600 },
-    { id: 2, size: { length: 72, width: 36, thickness: 5 }, price: 9600 },
-    { id: 3, size: { length: 72, width: 36, thickness: 6 }, price: 10700 },
-    { id: 4, size: { length: 72, width: 36, thickness: 7 }, price: 12100 },
-    { id: 5, size: { length: 72, width: 36, thickness: 8 }, price: 13500 },
-    { id: 6, size: { length: 72, width: 36, thickness: 9 }, price: 14600 },
-    { id: 7, size: { length: 72, width: 36, thickness: 10 }, price: 15600 },
-    { id: 8, size: { length: 72, width: 48, thickness: 4 }, price: 10600 },
-    { id: 9, size: { length: 72, width: 48, thickness: 5 }, price: 12000 },
-    { id: 10, size: { length: 72, width: 48, thickness: 6 }, price: 13400 },
-    { id: 11, size: { length: 72, width: 48, thickness: 7 }, price: 15200 },
-    { id: 12, size: { length: 72, width: 48, thickness: 8 }, price: 16900 },
-    { id: 13, size: { length: 72, width: 48, thickness: 9 }, price: 18300 },
-    { id: 14, size: { length: 72, width: 48, thickness: 10 }, price: 19600 },
-    { id: 15, size: { length: 72, width: 60, thickness: 4 }, price: 12700 },
-    { id: 16, size: { length: 72, width: 60, thickness: 5 }, price: 14400 },
-    { id: 17, size: { length: 72, width: 60, thickness: 6 }, price: 16100 },
-    { id: 18, size: { length: 72, width: 60, thickness: 7 }, price: 18200 },
-    { id: 19, size: { length: 72, width: 60, thickness: 8 }, price: 20300 },
-    { id: 20, size: { length: 72, width: 60, thickness: 9 }, price: 22100 },
-    { id: 21, size: { length: 72, width: 60, thickness: 10 }, price: 23700 },
-    { id: 22, size: { length: 72, width: 72, thickness: 4 }, price: 14700 },
-    { id: 23, size: { length: 72, width: 72, thickness: 5 }, price: 16700 },
-    { id: 24, size: { length: 72, width: 72, thickness: 6 }, price: 18800 },
-    { id: 25, size: { length: 72, width: 72, thickness: 7 }, price: 21200 },
-    { id: 26, size: { length: 72, width: 72, thickness: 8 }, price: 23700 },
-    { id: 27, size: { length: 72, width: 72, thickness: 9 }, price: 25800 },
-    { id: 28, size: { length: 72, width: 72, thickness: 10 }, price: 27700 },
-    { id: 29, size: { length: 75, width: 36, thickness: 4 }, price: 8800 },
-    { id: 30, size: { length: 75, width: 36, thickness: 5 }, price: 9800 },
-    { id: 31, size: { length: 75, width: 36, thickness: 6 }, price: 10900 },
-    { id: 32, size: { length: 75, width: 36, thickness: 7 }, price: 12400 },
-    { id: 33, size: { length: 75, width: 36, thickness: 8 }, price: 13900 },
-    { id: 34, size: { length: 75, width: 36, thickness: 9 }, price: 15000 },
-    { id: 35, size: { length: 75, width: 36, thickness: 10 }, price: 16000 },
-    { id: 36, size: { length: 75, width: 48, thickness: 4 }, price: 10800 },
-    { id: 37, size: { length: 75, width: 48, thickness: 5 }, price: 12300 },
-    { id: 38, size: { length: 75, width: 48, thickness: 6 }, price: 13700 },
-    { id: 39, size: { length: 75, width: 48, thickness: 7 }, price: 15500 },
-    { id: 40, size: { length: 75, width: 48, thickness: 8 }, price: 17400 },
-    { id: 41, size: { length: 75, width: 48, thickness: 9 }, price: 18800 },
-    { id: 42, size: { length: 75, width: 48, thickness: 10 }, price: 20200 },
-    { id: 43, size: { length: 75, width: 60, thickness: 4 }, price: 12900 },
-    { id: 44, size: { length: 75, width: 60, thickness: 5 }, price: 14700 },
-    { id: 45, size: { length: 75, width: 60, thickness: 6 }, price: 16500 },
-    { id: 46, size: { length: 75, width: 60, thickness: 7 }, price: 18700 },
-    { id: 47, size: { length: 75, width: 60, thickness: 8 }, price: 20900 },
-    { id: 48, size: { length: 75, width: 60, thickness: 9 }, price: 22700 },
-    { id: 49, size: { length: 75, width: 60, thickness: 10 }, price: 24400 },
-    { id: 50, size: { length: 75, width: 72, thickness: 4 }, price: 15000 },
-    { id: 51, size: { length: 75, width: 72, thickness: 5 }, price: 17100 },
-    { id: 52, size: { length: 75, width: 72, thickness: 6 }, price: 19300 },
-    { id: 53, size: { length: 75, width: 72, thickness: 7 }, price: 21800 },
-    { id: 54, size: { length: 75, width: 72, thickness: 8 }, price: 24300 },
-    { id: 55, size: { length: 75, width: 72, thickness: 9 }, price: 26500 },
-    { id: 56, size: { length: 75, width: 72, thickness: 10 }, price: 28600 },
-    { id: 57, size: { length: 78, width: 72, thickness: 4 }, price: 15600 },
-    { id: 58, size: { length: 78, width: 72, thickness: 5 }, price: 17800 },
-    { id: 59, size: { length: 78, width: 72, thickness: 6 }, price: 20100 },
-    { id: 60, size: { length: 78, width: 72, thickness: 7 }, price: 22700 },
-    { id: 61, size: { length: 78, width: 72, thickness: 8 }, price: 25300 },
-    { id: 62, size: { length: 78, width: 72, thickness: 9 }, price: 27600 },
-    { id: 63, size: { length: 78, width: 72, thickness: 10 }, price: 30700 },
-];
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
@@ -122,8 +62,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     const [selectedCustomTop, setSelectedCustomTop] = useState<string | null>(null)
     const [selectedColor, setSelectedColor] = useState<string | null>(null)
     const [quantity, setQuantity] = useState(1)
+    const { toggleCompare, compareList } = useCompare()
 
     const { addToCart, toggleFavorite, isFavorite } = useStore()
+    const { initiatePayment } = useRazorpay()
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     const CUSTOM_TOP_IMAGES: Record<string, string> = {
         "Pillow Top": "/images/comfy pillowtop.png",
@@ -167,26 +110,19 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         }).format(price);
     }
 
-    const calculatePrice = () => {
-        const [length, width] = selectedSize.split(" x ").map(Number);
-        const item = PRICE_LIST.find(p =>
-            p.size.length === length &&
-            p.size.width === width &&
-            p.size.thickness === selectedThickness
-        );
+    const finalPrice = getFinalPrice(selectedSize, selectedThickness, slug, selectedCustomTop);
+    const currentPriceList = PRICE_LISTS[slug] || PRICE_LISTS["pure-rest-mattress"];
+    const baseMrp = currentPriceList.find(p => {
+        const [l, w] = selectedSize.split(" x ").map(Number);
+        return p.size.length === l && p.size.width === w && p.size.thickness === selectedThickness;
+    })?.price ?? 0;
 
-        if (!item) return null;
+    // Add same surcharge to MRP for display consistency
+    let mrp = baseMrp;
+    if (selectedCustomTop === "Euro Top") mrp += 800;
+    if (selectedCustomTop === "Pillow Top") mrp += 2000;
 
-        const discount = 0.35;
-        const finalPrice = Math.round(item.price * (1 - discount));
-
-        return {
-            mrp: item.price,
-            final: finalPrice
-        };
-    }
-
-    const priceData = calculatePrice();
+    const priceData = { mrp, final: finalPrice };
 
     // Fallback data if slug is not found
     const productName = product?.name ?? "Orthopedic Mattress"
@@ -431,10 +367,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                         { name: "Euro Top", image: "/images/euro top.png" },
                                         { name: "Pillow Top", image: "/images/comfy pillowtop.png" }
                                     ].map((top) => (
-                                        <button
+                                        <motion.button
                                             key={top.name}
                                             onClick={() => handleCustomTopSelect(top.name)}
                                             title={top.name}
+                                            whileTap={{ scale: 0.95 }}
                                             className={`group flex flex-col items-center gap-2 transition-all duration-200 cursor-pointer`}
                                         >
                                             <div
@@ -460,7 +397,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                             <span className={`text-xs font-medium transition-colors ${selectedCustomTop === top.name ? "text-primary" : "text-muted-foreground"}`}>
                                                 {top.name}
                                             </span>
-                                        </button>
+                                        </motion.button>
                                     ))}
                                 </div>
                                 {selectedCustomTop && (
@@ -480,10 +417,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                         { name: "Olive Green", image: "/images/olivegreen.png" },
                                         { name: "All Black", image: "/images/allblack.png" },
                                     ].map((colour) => (
-                                        <button
+                                        <motion.button
                                             key={colour.name}
                                             onClick={() => setSelectedColor(prev => prev === colour.name ? null : colour.name)}
                                             title={colour.name}
+                                            whileTap={{ scale: 0.95 }}
                                             className={`group flex flex-col items-center gap-2 transition-all duration-200 cursor-pointer`}
                                         >
                                             <div
@@ -511,7 +449,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                                 }`}>
                                                 {colour.name}
                                             </span>
-                                        </button>
+                                        </motion.button>
                                     ))}
                                 </div>
                                 {selectedColor && (
@@ -522,56 +460,109 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             </div>
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                            <div className="flex items-center border rounded-md h-12 w-32 shrink-0">
-                                <button
-                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    className="w-10 h-full flex items-center justify-center hover:bg-muted text-muted-foreground"
-                                >
-                                    <Minus className="w-4 h-4" />
-                                </button>
-                                <div className="flex-1 text-center font-medium">{quantity}</div>
-                                <button
-                                    onClick={() => setQuantity(q => q + 1)}
-                                    className="w-10 h-full flex items-center justify-center hover:bg-muted text-muted-foreground"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <Button
-                                onClick={() => addToCart({
+                        {/* Add to Compare */}
+                        <div className="flex items-center gap-2 mb-6 p-3 bg-muted/40 rounded-xl border border-border/40 w-fit">
+                            <Checkbox
+                                id="page-compare"
+                                checked={compareList.some(item =>
+                                    item.id === slug &&
+                                    item.selectedOptions.size === selectedSize &&
+                                    item.selectedOptions.thickness === selectedThickness &&
+                                    item.selectedOptions.top === selectedCustomTop &&
+                                    item.selectedOptions.color === selectedColor
+                                )}
+                                onCheckedChange={() => toggleCompare({
+                                    id: slug,
                                     slug,
                                     name: productName,
                                     image: displayedImage,
-                                    price: priceData?.final ?? 0,
-                                    quantity,
-                                    size: selectedSize,
-                                    thickness: selectedThickness
+                                    finalPrice: priceData?.final ?? 0,
+                                    features: product?.compareFeatures ?? ["Orthopedic support", "Medium firm feel", "Ideal for back pain"],
+                                    selectedOptions: {
+                                        size: selectedSize,
+                                        thickness: selectedThickness,
+                                        top: selectedCustomTop,
+                                        color: selectedColor
+                                    }
                                 })}
-                                className="h-12 flex-1 text-base font-semibold"
-                                size="lg"
-                            >
-                                Add to Cart
-                            </Button>
-                            <Button className="h-12 flex-1 bg-black hover:bg-black/90 text-white text-base font-semibold" size="lg">
-                                Buy Now
-                            </Button>
-                            <Button
-                                onClick={() => toggleFavorite({
-                                    slug,
-                                    name: productName,
-                                    image: displayedImage,
-                                    priceFrom: priceData?.final ?? 0,
-                                    category: "Mattress"
-                                })}
-                                variant="outline"
-                                size="icon"
-                                className={`h-12 w-12 shrink-0 ${isFavorite(slug) ? 'bg-red-50 border-red-200' : ''}`}
-                            >
-                                <Heart className={`w-5 h-5 ${isFavorite(slug) ? 'fill-red-500 text-red-500' : ''}`} />
-                            </Button>
+                            />
+                            <label htmlFor="page-compare" className="text-sm font-semibold cursor-pointer select-none">
+                                Add to Compare
+                            </label>
                         </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col gap-4 mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center border rounded-md h-12 w-32 shrink-0">
+                                    <motion.button
+                                        whileTap={{ scale: 0.8 }}
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        className="w-10 h-full flex items-center justify-center hover:bg-muted text-muted-foreground"
+                                    >
+                                        <Minus className="w-4 h-4" />
+                                    </motion.button>
+                                    <div className="flex-1 text-center font-medium">{quantity}</div>
+                                    <motion.button
+                                        whileTap={{ scale: 0.8 }}
+                                        onClick={() => setQuantity(q => q + 1)}
+                                        className="w-10 h-full flex items-center justify-center hover:bg-muted text-muted-foreground"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                    </motion.button>
+                                </div>
+                                <Button
+                                    onClick={() => toggleFavorite({
+                                        slug,
+                                        name: productName,
+                                        image: displayedImage,
+                                        priceFrom: priceData?.final ?? 0,
+                                        category: "Mattress"
+                                    })}
+                                    variant="outline"
+                                    size="icon"
+                                    className={`h-12 w-12 shrink-0 ${isFavorite(slug) ? 'bg-red-50 border-red-200' : ''}`}
+                                >
+                                    <Heart className={`w-5 h-5 ${isFavorite(slug) ? 'fill-red-500 text-red-500' : ''}`} />
+                                </Button>
+                            </div>
+                            
+                            <div className="flex flex-row gap-3 w-full">
+                                <Button
+                                    onClick={() => addToCart({
+                                        slug,
+                                        name: productName,
+                                        image: displayedImage,
+                                        price: priceData?.final ?? 0,
+                                        quantity,
+                                        size: selectedSize,
+                                        thickness: selectedThickness,
+                                        top: selectedCustomTop
+                                    })}
+                                    className="h-14 flex-1 text-sm sm:text-base font-bold rounded-2xl bg-white border-2 border-zinc-200 text-zinc-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-zinc-300 hover:bg-zinc-50 transition-all gap-1.5 sm:gap-2"
+                                    size="lg"
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                    Add to Cart
+                                </Button>
+                                <Button 
+                                    onClick={() => setIsCheckoutOpen(true)}
+                                    className="h-14 flex-1 bg-black hover:bg-zinc-900 text-white text-sm sm:text-base font-bold rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.4)] transition-all gap-1.5 sm:gap-2" 
+                                    size="lg"
+                                >
+                                    <CreditCard className="w-5 h-5" />
+                                    Buy Now
+                                </Button>
+                            </div>
+                        </div>
+
+                        <CheckoutDialog 
+                            open={isCheckoutOpen}
+                            onOpenChange={setIsCheckoutOpen}
+                            amount={(priceData?.final ?? 0) * quantity}
+                            productName={productName}
+                            description={`Purchase for ${productName} (${selectedSize}, ${selectedThickness}")`}
+                        />
 
                         {/* Info Accordion */}
                         <div className="space-y-4">

@@ -47,6 +47,8 @@ import { Preloader } from "@/components/preloader"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { StoreProvider } from "@/lib/store"
 import { FloatingActions } from "@/components/floating-actions"
+import { CompareProvider } from "@/context/compare-context"
+import { FloatingCompare } from "@/components/floating-compare"
 
 const playfair = localFont({
   src: [
@@ -73,11 +75,14 @@ export default function RootLayout({
         className={`${playfair.variable} font-sans antialiased`}
       >
         <StoreProvider>
-          <Preloader />
-          {children}
-          <FloatingActions />
-          <ScrollToTop />
-          <Analytics />
+          <CompareProvider>
+            <Preloader />
+            {children}
+            <FloatingActions />
+            <FloatingCompare />
+            <ScrollToTop />
+            <Analytics />
+          </CompareProvider>
         </StoreProvider>
       </body>
     </html>
