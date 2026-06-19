@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useRazorpay } from "@/hooks/use-razorpay"
+import { useCheckout } from "@/hooks/use-checkout"
+import { useStore } from "@/lib/store"
 import {
     Dialog,
     DialogContent,
@@ -26,7 +27,8 @@ interface CheckoutDialogProps {
 }
 
 export function CheckoutDialog({ open, onOpenChange, amount, productName, description }: CheckoutDialogProps) {
-    const { initiatePayment } = useRazorpay()
+    const { initiateCheckout } = useCheckout()
+    const { clearCart } = useStore()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,18 +48,19 @@ export function CheckoutDialog({ open, onOpenChange, amount, productName, descri
         }
 
         try {
-            await initiatePayment({
+            await initiateCheckout({
                 amount,
-                name: "Feza Mattress",
-                description,
+                customerName: name,
                 email,
                 contact: phone,
+                address,
+                productName,
+                description,
                 onSuccess: () => {
-                    toast.success("Order placed successfully!")
+                    clearCart()
+                    onOpenChange(false)
                 }
             })
-            // Close the dialog immediately so the overlay doesn't block the Razorpay popup
-            onOpenChange(false)
         } catch (error) {
             console.error("Checkout error:", error)
         } finally {
@@ -165,8 +168,8 @@ export function CheckoutDialog({ open, onOpenChange, amount, productName, descri
                                     />
                                 ) : (
                                     <>
-                                        <CreditCard className="w-5 h-5" />
-                                        <span>Proceed to Payment</span>
+                                        <ShoppingBag className="w-5 h-5" />
+                                        <span>Place Order</span>
                                     </>
                                 )}
                             </Button>

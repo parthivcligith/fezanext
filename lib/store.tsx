@@ -30,6 +30,7 @@ type StoreContextType = {
     updateQuantity: (cartItemId: string, delta: number) => void;
     toggleFavorite: (product: FavoriteItem) => void;
     isFavorite: (slug: string) => boolean;
+    clearCart: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null)
@@ -95,9 +96,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     const isFavorite = (slug: string) => mounted && favorites.some(p => p.slug === slug)
 
+    const clearCart = () => {
+        setCart([])
+    }
+
     return (
         <StoreContext.Provider value={{
-            cart, favorites, addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite
+            cart, favorites, addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart
         }}>
             {children}
         </StoreContext.Provider>

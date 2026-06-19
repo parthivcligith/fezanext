@@ -41,7 +41,6 @@ import { useStore } from "@/lib/store"
 import { useCompare } from "@/context/compare-context"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PRICE_LISTS, getFinalPrice } from "@/lib/prices"
-import { useRazorpay } from "@/hooks/use-razorpay"
 import { CheckoutDialog } from "@/components/checkout-dialog"
 
 const IMAGES = [
@@ -65,7 +64,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     const { toggleCompare, compareList } = useCompare()
 
     const { addToCart, toggleFavorite, isFavorite } = useStore()
-    const { initiatePayment } = useRazorpay()
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
     const CUSTOM_TOP_IMAGES: Record<string, string> = {

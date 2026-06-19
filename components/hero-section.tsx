@@ -33,22 +33,53 @@ export function HeroSection() {
   const opacity = useTransform(smoothProgress, [0, 0.5], [1, 0])
 
   useEffect(() => {
-    let loadedCount = 0
+    let active = true
     const imgs: HTMLImageElement[] = []
-
-    // Only load every 2nd frame if performance is an issue, but let's try all
+    
+    // Create image placeholders
     for (let i = 1; i <= totalFrames; i++) {
       const img = new window.Image()
-      img.src = `/images/ezgiff/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`
-      img.onload = () => {
-        loadedCount++
-        if (loadedCount === totalFrames) {
-          setImagesLoaded(true)
-        }
-      }
       imgs.push(img)
     }
     imagesRef.current = imgs
+
+    // 1. Eagerly load the first frame so it draws immediately on mount
+    imgs[0].src = `/images/ezgiff/ezgif-frame-001.jpg`
+    imgs[0].onload = () => {
+      if (!active) return
+      setImagesLoaded(true)
+      
+      // 2. Load the remaining frames in the background when the CPU/Network is idle
+      let currentIndex = 1; // Start from frame 2 (index 1)
+      
+      const loadNextBatch = () => {
+        if (!active) return
+        const batchSize = 15;
+        const end = Math.min(totalFrames - 1, currentIndex + batchSize);
+        
+        for (let i = currentIndex; i <= end; i++) {
+          if (!imgs[i].src) {
+            imgs[i].src = `/images/ezgiff/ezgif-frame-${(i + 1).toString().padStart(3, '0')}.jpg`
+          }
+        }
+        
+        currentIndex = end + 1;
+        if (currentIndex < totalFrames) {
+          if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+            window.requestIdleCallback(() => loadNextBatch());
+          } else {
+            setTimeout(loadNextBatch, 50);
+          }
+        }
+      };
+      
+      // Start background loading after a short delay (200ms) to allow initial page hydration
+      setTimeout(loadNextBatch, 200);
+    }
+
+    return () => {
+      active = false
+    }
   }, [])
 
   const render = (progress: number) => {
@@ -65,13 +96,41 @@ export function HeroSection() {
     )
 
     const img = imagesRef.current[frameIndex]
-    if (img && img.complete && img.naturalWidth > 0) {
-      if (canvasRef.current.width !== img.naturalWidth || canvasRef.current.height !== img.naturalHeight) {
-        canvasRef.current.width = img.naturalWidth
-        canvasRef.current.height = img.naturalHeight
+    if (img) {
+      if (!img.src) {
+        // Set the src on-demand if not preloaded yet
+        img.src = `/images/ezgiff/ezgif-frame-${(frameIndex + 1).toString().padStart(3, '0')}.jpg`
       }
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-      ctx.drawImage(img, 0, 0)
+      
+      const drawImageToCanvas = () => {
+        if (!canvasRef.current) return
+        const ctx = canvasRef.current.getContext("2d")
+        if (!ctx) return
+        
+        if (canvasRef.current.width !== img.naturalWidth || canvasRef.current.height !== img.naturalHeight) {
+          canvasRef.current.width = img.naturalWidth
+          canvasRef.current.height = img.naturalHeight
+        }
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        ctx.drawImage(img, 0, 0)
+      }
+
+      if (img.complete && img.naturalWidth > 0) {
+        drawImageToCanvas()
+      } else {
+        // Setup listener to draw as soon as it's loaded
+        img.onload = () => {
+          // Double check if the current frame is still this frameIndex to avoid jittering
+          const latestProgress = smoothProgress.get()
+          const currentFrameIndex = Math.min(
+            totalFrames - 1,
+            Math.floor(latestProgress * (totalFrames - 1))
+          )
+          if (currentFrameIndex === frameIndex) {
+            drawImageToCanvas()
+          }
+        }
+      }
     }
   }
 

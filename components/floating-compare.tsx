@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getFinalPrice } from "@/lib/prices";
-import { useRazorpay } from "@/hooks/use-razorpay";
+import { CheckoutDialog } from "@/components/checkout-dialog";
 import { X, Scale, Trash2, ShieldCheck, Plus, Eye, Zap, Check, ChevronRight, Info } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
@@ -25,9 +25,10 @@ const TOPS = ["Standard", "Euro Top", "Pillow Top"];
 
 export function FloatingCompare() {
   const { compareList, removeItem, clearCompare, updateItemOptions } = useCompare();
-  const { initiatePayment } = useRazorpay();
   const [isOpen, setIsOpen] = useState(false);
   const [showDiffOnly, setShowDiffOnly] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutItem, setCheckoutItem] = useState<{ amount: number; productName: string; description: string } | null>(null);
 
   // Lock scroll when drawer is open
   React.useEffect(() => {
@@ -291,8 +292,18 @@ export function FloatingCompare() {
                               </div>
                            </div>
 
-                           <Button className="w-full h-16 rounded-[22px] bg-zinc-900 text-white font-black text-lg shadow-xl shadow-zinc-900/20 active:scale-95">
-                              Buy this model
+                           <Button 
+                             onClick={() => {
+                               setCheckoutItem({
+                                 amount: currentPrice,
+                                 productName: item.name,
+                                 description: `Purchase for ${item.name} (${item.selectedOptions.size}, ${item.selectedOptions.thickness}")`
+                               });
+                               setIsCheckoutOpen(true);
+                             }}
+                             className="w-full h-16 rounded-[22px] bg-zinc-900 text-white font-black text-lg shadow-xl shadow-zinc-900/20 active:scale-95"
+                           >
+                               Buy this model
                            </Button>
                         </div>
                       );
@@ -523,10 +534,14 @@ export function FloatingCompare() {
                      {compareList.map((item) => (
                        <div key={`act-${item.uniqueId}`} className="space-y-4">
                           <Button 
-                            onClick={() => initiatePayment({ 
+                            onClick={() => {
+                              setCheckoutItem({
                                 amount: getFinalPrice(item.selectedOptions.size, item.selectedOptions.thickness, item.slug, item.selectedOptions.top),
+                                productName: item.name,
                                 description: `Purchase for ${item.name} (${item.selectedOptions.size}, ${item.selectedOptions.thickness}")`
-                            })}
+                              });
+                              setIsCheckoutOpen(true);
+                            }}
                             className="w-full h-16 rounded-[22px] bg-zinc-900 hover:bg-zinc-800 text-white font-black text-lg transition-all shadow-xl shadow-zinc-900/20 active:scale-95 group"
                           >
                             Secure Purchase
@@ -546,6 +561,16 @@ export function FloatingCompare() {
         </>
       )}
       </AnimatePresence>
+
+      {checkoutItem && (
+        <CheckoutDialog 
+          open={isCheckoutOpen}
+          onOpenChange={setIsCheckoutOpen}
+          amount={checkoutItem.amount}
+          productName={checkoutItem.productName}
+          description={checkoutItem.description}
+        />
+      )}
     </LayoutGroup>
   );
 }

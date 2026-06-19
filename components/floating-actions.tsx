@@ -6,7 +6,6 @@ import { ShoppingCart, Heart, X, Trash2, Plus, Minus, ChevronRight } from "lucid
 import { useStore } from "@/lib/store"
 import Link from "next/link"
 import Image from "next/image"
-import { useRazorpay } from "@/hooks/use-razorpay"
 import { CheckoutDialog } from "@/components/checkout-dialog"
 
 function formatPrice(price: number) {
@@ -15,7 +14,6 @@ function formatPrice(price: number) {
 
 export function FloatingActions() {
     const { cart, favorites, removeFromCart, updateQuantity, toggleFavorite } = useStore()
-    const { initiatePayment } = useRazorpay()
     const [openDrawer, setOpenDrawer] = useState<"cart" | "favorites" | null>(null)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
