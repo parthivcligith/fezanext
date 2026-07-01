@@ -56,18 +56,38 @@ const Gallery4 = ({
     // Base auto-scroll speed (px/frame). Negative = left.
     const BASE_SPEED = -0.6;
 
-    const getTrackWidth = useCallback(() => {
-        if (!trackRef.current) return 0;
-        // The total scrollable width of one "cycle" = full track / number of repetitions
-        return trackRef.current.scrollWidth / 5;
-    }, []);
+    const trackWidthRef = useRef<number>(0);
 
-    const clampPos = useCallback((pos: number) => {
-        const cycleW = getTrackWidth();
-        if (cycleW === 0) return pos;
-        // Keep pos within [-cycleW, 0] for seamless loop
-        return ((pos % cycleW) - cycleW) % cycleW;
-    }, [getTrackWidth]);
+    // Keep trackWidthRef updated without layout thrashing (forced synchronous reflows)
+    useEffect(() => {
+        if (!trackRef.current) return;
+
+        const updateWidth = () => {
+            if (trackRef.current) {
+                trackWidthRef.current = trackRef.current.scrollWidth / 5;
+            }
+        };
+
+        updateWidth();
+
+        let resizeObserver: ResizeObserver | null = null;
+        if (typeof window !== "undefined" && "ResizeObserver" in window) {
+            resizeObserver = new ResizeObserver(() => {
+                updateWidth();
+            });
+            resizeObserver.observe(trackRef.current);
+        } else {
+            window.addEventListener("resize", updateWidth);
+        }
+
+        return () => {
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            } else {
+                window.removeEventListener("resize", updateWidth);
+            }
+        };
+    }, []);
 
     const animate = useCallback(() => {
         if (!trackRef.current) {
@@ -75,7 +95,7 @@ const Gallery4 = ({
             return;
         }
 
-        const cycleW = getTrackWidth();
+        const cycleW = trackWidthRef.current; // Fast cache lookup, no layout thrashing!
 
         if (isDraggingRef.current) {
             // During drag, position is set directly — just render
@@ -110,7 +130,7 @@ const Gallery4 = ({
 
         trackRef.current.style.transform = `translateX(${posRef.current}px)`;
         rafRef.current = requestAnimationFrame(animate);
-    }, [getTrackWidth, BASE_SPEED]);
+    }, [BASE_SPEED]);
 
     useEffect(() => {
         let observer: IntersectionObserver | null = null;
