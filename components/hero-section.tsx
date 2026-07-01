@@ -29,10 +29,10 @@ export function HeroSection() {
     restDelta: 0.001
   })
 
-  const toothY = useTransform(smoothProgress, [0, 1], [0, 500])
-  const toothScale = useTransform(smoothProgress, [0, 1], [1, 1.8])
-  const textY = useTransform(smoothProgress, [0, 1], [0, 50])
-  const opacity = useTransform(smoothProgress, [0, 0.5], [1, 0])
+  const toothY = useTransform(smoothProgress, (latest) => isMobileDevice ? 0 : latest * 500)
+  const toothScale = useTransform(smoothProgress, (latest) => isMobileDevice ? 1 : 1 + latest * 0.8)
+  const textY = useTransform(smoothProgress, (latest) => isMobileDevice ? 0 : latest * 50)
+  const opacity = useTransform(smoothProgress, (latest) => isMobileDevice ? 1 : (latest > 0.5 ? 0 : 1 - latest * 2))
 
   // Hydration-safe mobile check
   useEffect(() => {
