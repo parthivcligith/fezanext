@@ -12,6 +12,7 @@ export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [imagesLoaded, setImagesLoaded] = useState(false)
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
   const imagesRef = useRef<HTMLImageElement[]>([])
   const lastRenderedFrameRef = useRef<number>(-1)
   const totalFrames = 240
@@ -33,7 +34,18 @@ export function HeroSection() {
   const textY = useTransform(smoothProgress, [0, 1], [0, 50])
   const opacity = useTransform(smoothProgress, [0, 0.5], [1, 0])
 
+  // Hydration-safe mobile check
   useEffect(() => {
+    setIsMobileDevice(window.innerWidth < 768)
+  }, [])
+
+  useEffect(() => {
+    // On mobile, completely skip batch loading the 240-frame sequence
+    if (window.innerWidth < 768) {
+      setImagesLoaded(true)
+      return
+    }
+
     let active = true
     const imgs: HTMLImageElement[] = []
     
@@ -149,13 +161,13 @@ export function HeroSection() {
 
   // Render initial frame when loaded
   useEffect(() => {
-    if (imagesLoaded) {
+    if (imagesLoaded && !isMobileDevice) {
       render(smoothProgress.get())
     }
-  }, [imagesLoaded, smoothProgress])
+  }, [imagesLoaded, smoothProgress, isMobileDevice])
 
   useMotionValueEvent(smoothProgress, "change", (latest) => {
-    if (imagesLoaded) {
+    if (imagesLoaded && !isMobileDevice) {
       render(latest)
     }
   })
@@ -308,12 +320,20 @@ export function HeroSection() {
               >
                 {/* 3D Image Sequence Canvas */}
                 <div className="relative w-96 h-56 sm:w-[32rem] sm:h-72 lg:w-[42rem] lg:h-96 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] pointer-events-none">
-                  <canvas
-                    ref={canvasRef}
-                    className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
-                    width={800} // Default high-res width
-                    height={450}
-                  />
+                  {isMobileDevice ? (
+                    <img
+                      src="/images/ezgiff/ezgif-frame-001.jpg"
+                      alt="Feza Mattress"
+                      className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
+                    />
+                  ) : (
+                    <canvas
+                      ref={canvasRef}
+                      className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
+                      width={800} // Default high-res width
+                      height={450}
+                    />
+                  )}
                 </div>
               </motion.div>
 
