@@ -113,8 +113,42 @@ const Gallery4 = ({
     }, [getTrackWidth, BASE_SPEED]);
 
     useEffect(() => {
-        rafRef.current = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(rafRef.current);
+        let observer: IntersectionObserver | null = null;
+        let active = true;
+
+        const startAnimation = () => {
+            if (active && rafRef.current === 0) {
+                rafRef.current = requestAnimationFrame(animate);
+            }
+        };
+
+        const stopAnimation = () => {
+            if (rafRef.current !== 0) {
+                cancelAnimationFrame(rafRef.current);
+                rafRef.current = 0;
+            }
+        };
+
+        if (typeof window !== "undefined" && "IntersectionObserver" in window && containerRef.current) {
+            observer = new IntersectionObserver(([entry]) => {
+                if (entry.isIntersecting) {
+                    startAnimation();
+                } else {
+                    stopAnimation();
+                }
+            }, { threshold: 0.01 });
+            observer.observe(containerRef.current);
+        } else {
+            startAnimation();
+        }
+
+        return () => {
+            active = false;
+            if (observer) {
+                observer.disconnect();
+            }
+            stopAnimation();
+        };
     }, [animate]);
 
     // Mouse enter/leave

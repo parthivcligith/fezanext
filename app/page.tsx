@@ -1,14 +1,12 @@
-import dynamic from "next/dynamic"
 import { Navigation } from "@/components/navigation"
 import { HeroSection } from "@/components/hero-section"
 import { VelocityScroll } from "@/components/ui/scroll-based-velocity"
-
-const AboutSection = dynamic(() => import("@/components/about-section").then(m => m.AboutSection))
-const Gallery4 = dynamic(() => import("@/components/ui/gallery4").then(m => m.Gallery4))
-const SaleBanner = dynamic(() => import("@/components/sale-banner").then(m => m.SaleBanner))
-const ProductCard = dynamic(() => import("@/components/ui/product-card-1").then(m => m.ProductCard))
-const Contact2 = dynamic(() => import("@/components/ui/contact-2").then(m => m.Contact2))
-const Footer = dynamic(() => import("@/components/footer").then(m => m.Footer))
+import { AboutSection } from "@/components/about-section"
+import { Gallery4 } from "@/components/ui/gallery4"
+import { SaleBanner } from "@/components/sale-banner"
+import { ProductCard } from "@/components/ui/product-card-1"
+import { Contact2 } from "@/components/ui/contact-2"
+import { Footer } from "@/components/footer"
 
 const parallaxImages = [
   {

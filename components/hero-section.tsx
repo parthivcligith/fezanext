@@ -13,6 +13,7 @@ export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [imagesLoaded, setImagesLoaded] = useState(false)
   const imagesRef = useRef<HTMLImageElement[]>([])
+  const lastRenderedFrameRef = useRef<number>(-1)
   const totalFrames = 240
 
   const { scrollYProgress } = useScroll({
@@ -54,7 +55,7 @@ export function HeroSection() {
       
       const loadNextBatch = () => {
         if (!active) return
-        const batchSize = 15;
+        const batchSize = 8; // Smaller batch size to prevent network saturation
         const end = Math.min(totalFrames - 1, currentIndex + batchSize);
         
         for (let i = currentIndex; i <= end; i++) {
@@ -66,19 +67,27 @@ export function HeroSection() {
         currentIndex = end + 1;
         if (currentIndex < totalFrames) {
           if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-            window.requestIdleCallback(() => loadNextBatch());
+            window.requestIdleCallback(() => {
+              // Add a small delay between batches
+              setTimeout(loadNextBatch, 100);
+            });
           } else {
-            setTimeout(loadNextBatch, 50);
+            setTimeout(loadNextBatch, 150);
           }
         }
       };
       
-      // Start background loading after a short delay (200ms) to allow initial page hydration
-      setTimeout(loadNextBatch, 200);
+      // Start background loading after a 1.5s delay to allow initial page hydration
+      setTimeout(loadNextBatch, 1500);
     }
 
     return () => {
       active = false
+      // Clear onload / onerror handlers to prevent memory leaks and allow garbage collection
+      imgs.forEach(img => {
+        img.onload = null
+        img.onerror = null
+      })
     }
   }, [])
 
@@ -113,10 +122,14 @@ export function HeroSection() {
         }
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
         ctx.drawImage(img, 0, 0)
+        lastRenderedFrameRef.current = frameIndex
       }
 
       if (img.complete && img.naturalWidth > 0) {
-        drawImageToCanvas()
+        // Only draw if this frame is different from the last rendered frame to save CPU/GPU cycles
+        if (frameIndex !== lastRenderedFrameRef.current) {
+          drawImageToCanvas()
+        }
       } else {
         // Setup listener to draw as soon as it's loaded
         img.onload = () => {
