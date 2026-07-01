@@ -164,13 +164,10 @@ export function HeroSection() {
     <div
       ref={containerRef}
       id="home"
-      className="relative min-h-screen h-auto flex items-center justify-center pt-20"
+      className="relative min-h-screen h-auto flex items-center justify-center pt-20 bg-cover bg-center md:bg-fixed"
       style={{
         overflowX: "clip",
         backgroundImage: "url('/images/cloud-mattress-bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed"
       }}
     >
 
@@ -275,7 +272,7 @@ export function HeroSection() {
           >
             {/* Pedestal Shadow */}
             <motion.div
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-12 bg-black/10 rounded-full blur-2xl"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-12 bg-black/10 rounded-full blur-2xl pointer-events-none"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, delay: 0.8 }}
@@ -283,7 +280,7 @@ export function HeroSection() {
 
             {/* Pedestal - as requested in prompt, though not in original design, added here for completeness if needed or just keep shadow */}
             <motion.div
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none"
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 0.6 }}
@@ -295,11 +292,11 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="relative"
+              className="relative pointer-events-none"
             >
               {/* Floating Mattress Container */}
               <motion.div
-                className="relative will-change-transform"
+                className="relative will-change-transform pointer-events-none"
                 animate={{
                   y: [0, -10, 0], // Adjusted to prompt: 10px bob
                 }}
@@ -310,10 +307,10 @@ export function HeroSection() {
                 }}
               >
                 {/* 3D Image Sequence Canvas */}
-                <div className="relative w-96 h-56 sm:w-[32rem] sm:h-72 lg:w-[42rem] lg:h-96 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)]">
+                <div className="relative w-96 h-56 sm:w-[32rem] sm:h-72 lg:w-[42rem] lg:h-96 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] pointer-events-none">
                   <canvas
                     ref={canvasRef}
-                    className="w-full h-full object-contain drop-shadow-2xl"
+                    className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
                     width={800} // Default high-res width
                     height={450}
                   />
@@ -332,12 +329,10 @@ export function HeroSection() {
                   ease: "easeInOut",
                 }}
               >
-                <div className="absolute top-1/4 left-1/3 w-24 h-24 bg-white/40 rounded-full blur-2xl" />
-                <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-accent/20 rounded-full blur-xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-64 bg-blue-300/20 rounded-full blur-3xl opacity-50" />
+                <div className="absolute top-1/4 left-1/3 w-24 h-24 bg-white/40 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-accent/20 rounded-full blur-xl pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-64 bg-blue-300/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
               </motion.div>
-
-
             </motion.div>
           </motion.div>
         </div>
