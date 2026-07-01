@@ -222,4 +222,17 @@ html {
   text-shadow: 0 0 20px rgba(197, 209, 214, 0.4), 0 0 40px rgba(197, 209, 214, 0.2);
 }
 
-/* Marquee animation now handled by JS rAF in gallery4.tsx */
+/* CSS Marquee animation for mobile compositor rendering */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-20%, 0, 0);
+  }
+}
+
+.animate-marquee-css {
+  animation: marquee-scroll 35s linear infinite;
+  will-change: transform;
+}

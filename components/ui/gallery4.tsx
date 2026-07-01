@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart } from "lucide-react";
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export interface Gallery4Item {
     id: string;
@@ -44,6 +45,12 @@ const Gallery4 = ({
     const repeatedItems = [...items, ...items, ...items, ...items, ...items];
 
     const trackRef = useRef<HTMLDivElement>(null);
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+    useEffect(() => {
+        setIsMobileDevice(window.innerWidth < 768);
+    }, []);
+
     const containerRef = useRef<HTMLDivElement>(null);
     const posRef = useRef(0);          // current translateX in px
     const velRef = useRef(0);          // current velocity (px/frame)
@@ -133,6 +140,8 @@ const Gallery4 = ({
     }, [BASE_SPEED]);
 
     useEffect(() => {
+        if (isMobileDevice) return; // Skip JS animation loop on mobile entirely!
+
         let observer: IntersectionObserver | null = null;
         let active = true;
 
@@ -169,7 +178,7 @@ const Gallery4 = ({
             }
             stopAnimation();
         };
-    }, [animate]);
+    }, [animate, isMobileDevice]);
 
     // Mouse enter/leave
     const handleMouseMove = (e: React.MouseEvent) => {
@@ -231,8 +240,11 @@ const Gallery4 = ({
             >
                 <div
                     ref={trackRef}
-                    className="flex gap-5 w-max will-change-transform"
-                    style={{ transform: "translateX(0px)" }}
+                    className={cn(
+                        "flex gap-5 w-max will-change-transform",
+                        isMobileDevice && "animate-marquee-css"
+                    )}
+                    style={isMobileDevice ? undefined : { transform: "translateX(0px)" }}
                 >
                     {repeatedItems.map((item, index) => (
                         <Link
