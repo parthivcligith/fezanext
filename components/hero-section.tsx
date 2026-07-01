@@ -270,7 +270,7 @@ export function HeroSection() {
 
           {/* Right Side - Floating Mattress with Scroll Animation */}
           <motion.div
-            className="relative flex items-center justify-center z-20 will-change-transform"
+            className="relative flex items-center justify-center z-20 will-change-transform pointer-events-none"
             style={{ y: toothY, scale: toothScale }}
           >
             {/* Pedestal Shadow */}
