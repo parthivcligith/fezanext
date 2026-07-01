@@ -233,6 +233,6 @@ html {
 }
 
 .animate-marquee-css {
-  animation: marquee-scroll 35s linear infinite;
+  animation: marquee-scroll 18s linear infinite;
   will-change: transform;
 }

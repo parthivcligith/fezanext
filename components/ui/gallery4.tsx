@@ -234,6 +234,7 @@ const Gallery4 = ({
             <div
                 ref={containerRef}
                 className="w-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+                style={{ touchAction: isMobileDevice ? "pan-y" : "auto" }}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 onMouseDown={handleMouseDown}
