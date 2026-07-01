@@ -227,7 +227,7 @@ const Gallery4 = ({
                                 }
                             }}
                         >
-                            <div className="relative h-full min-h-[27rem] max-w-full overflow-hidden rounded-xl md:aspect-[5/4] lg:aspect-[16/9]">
+                            <div className="relative h-full min-h-[28rem] max-w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-lg">
                                 <img
                                     src={item.image}
                                     alt={item.title}
@@ -235,24 +235,24 @@ const Gallery4 = ({
                                     className="absolute h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                                 />
                                 {/* Gradient overlay */}
-                                <div className="absolute inset-0 h-full bg-[linear-gradient(hsl(var(--primary)/0),hsl(var(--primary)/0.4),hsl(var(--primary)/0.8)_100%)] mix-blend-multiply transition-opacity duration-300 group-hover:opacity-90" />
+                                <div className="absolute inset-0 h-full bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300" />
 
                                 {/* Content */}
-                                <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-primary-foreground md:p-8">
-                                    <div className="mb-2 pt-4 text-xl font-semibold md:mb-3 md:pt-4 lg:pt-4">
+                                <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-white md:p-8">
+                                    <div className="mb-2 pt-4 text-2xl font-bold text-white tracking-tight">
                                         {item.title}
                                     </div>
-                                    <div className="mb-4 line-clamp-2 text-sm opacity-90 md:mb-6 lg:mb-4">
+                                    <div className="mb-5 line-clamp-2 text-sm text-white/80 font-normal leading-relaxed">
                                         {item.description}
                                     </div>
 
-                                    {/* CTA row — visible on hover */}
-                                    <div className="flex items-center gap-3 w-full translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 relative z-10">
-                                        <span className="flex-1 bg-white text-black inline-flex items-center justify-center rounded-md text-sm font-semibold h-10 px-4 py-2 pointer-events-none">
+                                    {/* CTA row — always visible on both mobile and desktop */}
+                                    <div className="flex items-center gap-3 w-full relative z-10">
+                                        <span className="flex-1 bg-white text-black inline-flex items-center justify-center rounded-2xl text-sm font-semibold h-12 px-6 py-2 transition-colors hover:bg-white/95">
                                             View Product →
                                         </span>
                                         <motion.button
-                                            whileTap={{ scale: 0.9 }}
+                                            whileTap={{ scale: 0.95 }}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -264,13 +264,13 @@ const Gallery4 = ({
                                                     quantity: 1,
                                                 });
                                             }}
-                                            className="bg-white/20 hover:bg-white/30 text-white inline-flex items-center justify-center rounded-md h-10 w-10 p-0 transition-colors pointer-events-auto"
+                                            className="bg-white/15 hover:bg-white/25 text-white inline-flex items-center justify-center rounded-2xl h-12 w-12 p-0 transition-colors pointer-events-auto shadow-sm"
                                             title="Add to Cart"
                                         >
-                                            <ShoppingCart className="h-4 w-4" />
+                                            <ShoppingCart className="h-5 w-5" />
                                         </motion.button>
                                         <motion.button
-                                            whileTap={{ scale: 0.9 }}
+                                            whileTap={{ scale: 0.95 }}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -282,16 +282,16 @@ const Gallery4 = ({
                                                     category: "Mattress"
                                                 });
                                             }}
-                                            className={`hover:bg-white/30 text-white inline-flex items-center justify-center rounded-md h-10 w-10 p-0 transition-colors pointer-events-auto ${isFavorite(item.id) ? 'bg-red-500/80 hover:bg-red-500' : 'bg-white/20'}`}
+                                            className={`hover:bg-white/25 text-white inline-flex items-center justify-center rounded-2xl h-12 w-12 p-0 transition-colors pointer-events-auto shadow-sm ${isFavorite(item.id) ? 'bg-red-500/80 hover:bg-red-500' : 'bg-white/15'}`}
                                             title="Add to Favorites"
                                         >
-                                            <Heart className={`h-4 w-4 ${isFavorite(item.id) ? 'fill-white' : ''}`} />
+                                            <Heart className={`h-5 w-5 ${isFavorite(item.id) ? 'fill-white' : ''}`} />
                                         </motion.button>
                                     </div>
                                 </div>
 
                                 {/* Hover ring */}
-                                <div className="absolute inset-0 rounded-xl ring-0 group-hover:ring-2 group-hover:ring-white/30 transition-all duration-300 pointer-events-none" />
+                                <div className="absolute inset-0 rounded-[2rem] ring-0 group-hover:ring-2 group-hover:ring-white/20 transition-all duration-300 pointer-events-none" />
                             </div>
                         </Link>
                     ))}
