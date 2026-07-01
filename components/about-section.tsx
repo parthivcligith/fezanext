@@ -13,8 +13,8 @@ export function AboutSection() {
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                     <motion.div
                         className="space-y-6"
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                     >
@@ -34,24 +34,24 @@ export function AboutSection() {
 
                     <motion.div
                         className="grid grid-cols-2 gap-6"
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/30 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                        <div className="bg-white/95 p-8 rounded-3xl border border-zinc-200/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h3 className="text-4xl md:text-5xl font-bold text-primary mb-2">10+</h3>
                             <p className="text-base font-medium text-muted-foreground">Years in Sleep Science</p>
                         </div>
-                        <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/30 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                        <div className="bg-white/95 p-8 rounded-3xl border border-zinc-200/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h3 className="text-4xl md:text-5xl font-bold text-primary mb-2">50k+</h3>
                             <p className="text-base font-medium text-muted-foreground">Happy Customers</p>
                         </div>
-                        <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/30 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                        <div className="bg-white/95 p-8 rounded-3xl border border-zinc-200/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h3 className="text-4xl md:text-5xl font-bold text-primary mb-2">100%</h3>
                             <p className="text-base font-medium text-muted-foreground">Premium Materials</p>
                         </div>
-                        <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/30 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                        <div className="bg-white/95 p-8 rounded-3xl border border-zinc-200/40 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                             <h3 className="text-4xl md:text-5xl font-bold text-primary mb-2">4.8</h3>
                             <p className="text-base font-medium text-muted-foreground">Customer Rating</p>
                         </div>
